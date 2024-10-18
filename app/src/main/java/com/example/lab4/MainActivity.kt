@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,9 +29,11 @@ class MainActivity : AppCompatActivity() {
 
         trueButton.setOnClickListener { view: View ->
 // Что-то выполнить после нажатия
+            Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show()
         }
         falseButton.setOnClickListener { view: View ->
 // Что-то выполнить после нажатия
+            Toast.makeText(this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show()
         }
 
     }
