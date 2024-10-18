@@ -2,6 +2,7 @@ package com.example.lab4
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -11,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.widget.Toast
 
+private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var trueButton: Button
@@ -24,12 +26,14 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_mideast, false),
         Question(R.string.question_africa, false),
         Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true))
+        Question(R.string.question_asia, true)
+    )
     private var currentIndex = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate(Bundle?) called")
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -44,43 +48,83 @@ class MainActivity : AppCompatActivity() {
 
 
         trueButton.setOnClickListener { view: View ->
-            Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show()
             checkAnswer(true)
         }
         falseButton.setOnClickListener { view: View ->
-            Toast.makeText(this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show()
             checkAnswer(false)
         }
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) %
                     questionBank.size
-            val questionTextResId =
-                questionBank[currentIndex].textResId
-            questionTextView.setText(questionTextResId)
             updateQuestion()
         }
-        val questionTextResId = questionBank[currentIndex].textResId
-        questionTextView.setText(questionTextResId)
         updateQuestion()
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(
+            TAG,
+            "onStart() called"
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(
+            TAG,
+            "onResume() called"
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(
+            TAG,
+            "onPause() called"
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(
+            TAG,
+            "onStop() called"
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(
+            TAG,
+            "onDestroy() called"
+        )
+    }
+
     private fun updateQuestion() {
         val questionTextResId =
             questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId)
     }
-    private fun checkAnswer(userAnswer:
-                            Boolean) {
+
+    private fun checkAnswer(
+        userAnswer:
+        Boolean
+    ) {
         val correctAnswer =
             questionBank[currentIndex].answer
         val messageResId = if (userAnswer ==
-            correctAnswer) {
+            correctAnswer
+        ) {
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
         }
-        Toast.makeText(this, messageResId,
-            Toast.LENGTH_SHORT)
+        Toast.makeText(
+            this, messageResId,
+            Toast.LENGTH_SHORT
+        )
             .show()
     }
 }
