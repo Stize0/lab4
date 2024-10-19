@@ -27,12 +27,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: Button
     private lateinit var questionTextView: TextView
     private lateinit var cheatButton: Button
+    var curCheat=0
     var i = 1
     var score = 0
     private val quizViewModel: QuizViewModel by
     lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java)
     }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         val currentIndex =
             savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         quizViewModel.currentIndex = currentIndex
+
 
 
         val provider: ViewModelProvider = ViewModelProvider(this)
@@ -60,73 +63,56 @@ class MainActivity : AppCompatActivity() {
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
         questionTextView = findViewById(R.id.question_text_view)
-        cheatButton = findViewById(R.id.cheat_button)
+        cheatButton=findViewById(R.id.cheat_button)
 
         trueButton.setOnClickListener { view: View ->
             checkAnswer(true)
-            trueButton.setVisibility(View.INVISIBLE)
-            falseButton.setVisibility(View.INVISIBLE)
         }
         falseButton.setOnClickListener { view: View ->
             checkAnswer(false)
-            falseButton.setVisibility(View.INVISIBLE)
-            trueButton.setVisibility(View.INVISIBLE)
         }
         nextButton.setOnClickListener {
             quizViewModel.moveToNext()
             updateQuestion()
-            trueButton.setVisibility(View.VISIBLE)
-            falseButton.setVisibility(View.VISIBLE)
-            Log.d(TAG, i.toString())
-            i = i + 1
-            if (i == 6)
-                nextButton.setVisibility(View.INVISIBLE)
         }
         updateQuestion()
         cheatButton.setOnClickListener()
         {
-            val answerIsTrue = quizViewModel.currentQuestionAnswer
-            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+            val answerIsTrue=quizViewModel.currentQuestionAnswer
+            val intent=CheatActivity.newIntent(this@MainActivity,answerIsTrue)
+            startActivityForResult(intent,REQUEST_CODE_CHEAT)
         }
 
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
+    {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK) {
+        if(resultCode != Activity.RESULT_OK)
+        {
             return
         }
-        if (requestCode == REQUEST_CODE_CHEAT) {
-            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+        if( requestCode== REQUEST_CODE_CHEAT)
+        {
+            quizViewModel.isCheater=data?.getBooleanExtra(EXTRA_ANSWER_SHOWN,false)?:false
         }
     }
-
     override fun onStart() {
         super.onStart()
-        Log.d(
-            TAG,
-            "onStart() called"
-        )
+        Log.d(TAG,
+            "onStart() called")
     }
-
     override fun onResume() {
         super.onResume()
-        Log.d(
-            TAG,
-            "onResume() called"
-        )
+        Log.d(TAG,
+            "onResume() called")
     }
-
     override fun onPause() {
         super.onPause()
-        Log.d(
-            TAG,
-            "onPause() called"
-        )
+        Log.d(TAG,
+            "onPause() called")
     }
-
-    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+    override fun onSaveInstanceState(savedInstanceState: Bundle)
+    {
         super.onSaveInstanceState(savedInstanceState)
         Log.i(TAG, "onSaveInstanceState")
         savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
@@ -134,34 +120,48 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.d(
-            TAG,
-            "onStop() called"
-        )
+        Log.d(TAG,
+            "onStop() called")
     }
-
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(
-            TAG,
-            "onDestroy() called"
-        )
+        Log.d(TAG,
+            "onDestroy() called")
     }
 
     private fun updateQuestion() {
+        trueButton.visibility= View.VISIBLE
+        falseButton.visibility= View.VISIBLE
+        i++
+        if(i==6)
+            nextButton.visibility=View.INVISIBLE
+        if(curCheat==3)
+        {
+            cheatButton.visibility=View.INVISIBLE
+        }else
+        {
+            cheatButton.visibility=View.VISIBLE
+        }
         val questionTextResId =
             quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
 
 
     }
-
-    private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer: Boolean = quizViewModel.currentQuestionAnswer
-        val messageResId = when {
-            quizViewModel.isCheater -> R.string.judgment_toast
-            userAnswer == correctAnswer -> R.string.correct_toast
-            else -> R.string.incorrect_toast
+    private fun checkAnswer(userAnswer: Boolean)
+    {
+        trueButton.visibility= View.INVISIBLE
+        falseButton.visibility= View.INVISIBLE
+        cheatButton.visibility=View.INVISIBLE
+        val correctAnswer:Boolean=quizViewModel.currentQuestionAnswer
+        val messageResId=when{
+            quizViewModel.isCheater-> {
+                curCheat++
+                quizViewModel.isCheater=false
+                R.string.judgment_toast
+            }
+            userAnswer==correctAnswer->R.string.correct_toast
+            else->R.string.incorrect_toast
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
         if (userAnswer == correctAnswer) {
@@ -170,7 +170,12 @@ class MainActivity : AppCompatActivity() {
             score = score
         }
         if (i == 6)
-            Toast.makeText(this, "Ваш счет: " + score.toString(), Toast.LENGTH_LONG).show()
+            Toast.makeText(this,"Ваш счет: " + score.toString(), Toast.LENGTH_LONG).show()
+        if(curCheat==3)
+        {
+            cheatButton.visibility=View.INVISIBLE
+        }
 
     }
-}
+        }
+
